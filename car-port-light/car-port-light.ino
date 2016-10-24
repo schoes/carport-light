@@ -23,7 +23,7 @@ boolean motionDetected = false;
 int brightness = 0;
 int fadeAmount = 5;
 void setup() {
-  //  Serial.begin(9600);
+  Serial.begin(9600);
   delay(3000);
   //SETUP LEDS
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -40,24 +40,44 @@ void setup() {
 void loop() {
 
   //FastLED.delay(1000 / UPDATES_PER_SECOND);
-//  if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
+  while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
     Serial.println("MOTION DETECTED");
-    motionDetected != motionDetected;
-    for (int n = 0; n < NUM_LEDS ; n++) {
-      leds[n] = CRGB::Green;
-      leds[n].fadeLightBy(brightness);
-    }
-    FastLED.show();
-    if (brightness < 255) {
+    if (brightness <= 255) {
       brightness += fadeAmount;
-    }
-    if (brightness == 0 || brightness == 255)
-    {
-      fadeAmount = -fadeAmount ;
-    }
+      Serial.println("brigthness:" + brightness);
 
-    delay(20);  // This delay sets speed of the fade. I usually do from 5-75 but you can always go higher.
+      for (int n = 0; n < NUM_LEDS ; n++) {
+        leds[n] = CRGB::Green;
+        leds[n].fadeLightBy(brightness);
+      }
+      FastLED.show();
+      delay(1000);
+    }
+  }
 
-//  }
+  while (digitalRead(PIR_PIN_ENTRANCE) == LOW) {
+    if (brightness > 0) {
+      brightness -= fadeAmount;
+      Serial.println("brigthness:" + brightness);
+
+      for (int n = 0; n < NUM_LEDS ; n++) {
+        leds[n] = CRGB::Black;
+        leds[n].fadeLightBy(brightness);
+      }
+      FastLED.show();
+      delay(1000);
+    }
+  }
+  FastLED.clear();
+  //if () {
+
+  //motionDetected != motionDetected;
+
+
+  // delay(20);
+
+  //delay(20);  // This delay sets speed of the fade. I usually do from 5-75 but you can always go higher.
+
+  //}
 
 }
