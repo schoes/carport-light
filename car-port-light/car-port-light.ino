@@ -16,7 +16,7 @@ CRGB leds[NUM_LEDS];
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define PIN_LIGHT_DETECTION_ENTRANCE 0
 #define PIN_LIGHT_DETECTION_DRIVE_IN 10
-#define LIGHT_INTENSE_BREAKPOINT 20
+#define LIGHT_INTENSE_BREAKPOINT 200
 
 int timeout = LED_DELAY * NUM_LEDS + 100;
 boolean motionDetected = false;
@@ -29,6 +29,8 @@ void setup() {
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   //  FastLED.setBrightness(  BRIGHTNESS );
   //  FastLED.setTemperature( TEMPERATURE_1 );
+  FastLED.clear();
+  FastLED.show();
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
   pinMode(PIR_PIN_DRIVE_IN, INPUT);
@@ -38,51 +40,45 @@ void setup() {
 }
 
 void loop() {
-
-  //FastLED.delay(1000 / UPDATES_PER_SECOND);
   int lightIntensity = analogRead(PIN_LIGHT_DETECTION_ENTRANCE);
-  //Serial.println(lightIntensity);
   if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
-
     while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
-      //Serial.println("MOTION DETECTED");
-      if (brightness <= 255) {
-        brightness += fadeAmount;
-        //Serial.println("brigthness:" + brightness);
-
-        for (int n = 0; n < NUM_LEDS ; n++) {
-          leds[n] = CRGB::Green;
-          leds[n].fadeLightBy(brightness);
-        }
-        FastLED.show();
-        delay(1000);
-      }
+      enableLight();
     }
+
 
     while (digitalRead(PIR_PIN_ENTRANCE) == LOW) {
-      if (brightness > 0) {
-        brightness -= fadeAmount;
-        //Serial.println("brigthness:" + brightness);
-
-        for (int n = 0; n < NUM_LEDS ; n++) {
-          leds[n] = CRGB::Black;
-          leds[n].fadeLightBy(brightness);
-        }
-        FastLED.show();
-        delay(1000);
-      }
+      delay(1000);
+      disableLight();
     }
-    //FastLED.clear();
   }
-  //if () {
-
-  //motionDetected != motionDetected;
-
-
-  // delay(20);
-
-  //delay(20);  // This delay sets speed of the fade. I usually do from 5-75 but you can always go higher.
-
-  //}
-
 }
+
+void enableLight() {
+  for (int fader = 0; fader < 255 ; fader += 5) {
+    for (int n = 0; n < NUM_LEDS ; n++) {
+      leds[n] = TEMPERATURE_1;
+      leds[n].maximizeBrightness(fader);
+      if (n % 10 == 0) {
+        FastLED.show();
+      }
+
+    }
+    delay(20);
+  }
+}
+
+void disableLight() {
+  for (int fader = 0; fader < 255; fader += 5) {
+    for (int n = NUM_LEDS; n >= 0 ; n--) {
+      leds[n].fadeToBlackBy(fader);
+      if (n % 10 == 0) {
+        FastLED.show();
+      }
+
+    }
+    delay(20);
+  }
+}
+
+
