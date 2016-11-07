@@ -13,11 +13,12 @@ CRGB leds[NUM_LEDS];
 #define PIN_LIGHT_DURATION 1
 #define PIN_LIGHT_DETECTION_DRIVE_IN 10
 #define LIGHT_INTENSE_BREAKPOINT 200
+#define MIN_LIGHT_DURATION 30000
 
 boolean motionDetected = false;
 int fadeAmount = 5;
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   delay(3000);
   //SETUP LEDS
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -25,7 +26,7 @@ void setup() {
   FastLED.show();
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
-  pinMode(PIR_PIN_DRIVE_IN, INPUT);
+  //pinMode(PIR_PIN_DRIVE_IN, INPUT);
   //SETUP LIGHT DETECTION
   //pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
   pinMode(PIN_LIGHT_DETECTION_DRIVE_IN, INPUT);
@@ -37,11 +38,11 @@ void loop() {
   if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
       enableLight();
+      delay(burningDuration);
     }
 
 
     while (digitalRead(PIR_PIN_ENTRANCE) == LOW) {
-      delay(burningDuration);
       disableLight();
     }
   }
@@ -74,8 +75,17 @@ void disableLight() {
   }
 }
 
-int calculateBurningDuration(){
-  return (analogRead(PIN_LIGHT_DURATION) * 1000)/3;
+int calculateBurningDuration() {
+  int duration = (analogRead(PIN_LIGHT_DURATION) * 1000) / 3;
+  Serial.println("READ DURATION:");
+  Serial.println(duration);
+  if (duration < MIN_LIGHT_DURATION) {
+    duration =  MIN_LIGHT_DURATION;
+  }
+  Serial.println("CALCULATED DURATION:");
+  Serial.println(duration / 1000);
+  return duration;
+
 }
 
 
