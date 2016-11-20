@@ -17,6 +17,7 @@ CRGB leds[NUM_LEDS];
 
 boolean motionDetected = false;
 int fadeAmount = 5;
+int MAX_BRIGHTNESS = 255;
 void setup() {
   //Serial.begin(9600);
   delay(3000);
@@ -34,7 +35,7 @@ void setup() {
 
 void loop() {
   int lightIntensity = analogRead(PIN_LIGHT_DETECTION_ENTRANCE);
-  int burningDuration = calculateBurningDuration();
+  unsigned long burningDuration = MIN_LIGHT_DURATION;
   if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
       enableLight();
@@ -49,7 +50,7 @@ void loop() {
 }
 
 void enableLight() {
-  for (int fader = 0; fader < 255 ; fader += 5) {
+  for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       leds[n] = Candle;
       leds[n].maximizeBrightness(fader);
@@ -76,13 +77,13 @@ void disableLight() {
 }
 
 int calculateBurningDuration() {
-  int duration = (analogRead(PIN_LIGHT_DURATION) * 1000) / 3;
-  Serial.println("READ DURATION:");
-  Serial.println(duration);
+  unsigned long duration = (analogRead(PIN_LIGHT_DURATION) * 5000);
+  Serial.println("READ DURATION SECONDS:");
+  Serial.println(duration/1000);
   if (duration < MIN_LIGHT_DURATION) {
     duration =  MIN_LIGHT_DURATION;
   }
-  Serial.println("CALCULATED DURATION:");
+  Serial.println("CALCULATED DURATION SECONDS:");
   Serial.println(duration / 1000);
   return duration;
 
