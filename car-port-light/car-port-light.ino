@@ -12,6 +12,7 @@ CRGB leds[NUM_LEDS];
 #define PIN_LIGHT_DETECTION_ENTRANCE 0
 #define PIN_LIGHT_DURATION 1
 #define PIN_LIGHT_DETECTION_DRIVE_IN 10
+// check the real darkenss outside
 #define LIGHT_INTENSE_BREAKPOINT 200
 #define MIN_LIGHT_DURATION 30000
 
@@ -19,7 +20,8 @@ boolean motionDetected = false;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
 void setup() {
-  //Serial.begin(9600);
+  // enable loggin
+  Serial.begin(9600);
   delay(3000);
   //SETUP LEDS
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -27,29 +29,31 @@ void setup() {
   FastLED.show();
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
-  //pinMode(PIR_PIN_DRIVE_IN, INPUT);
+  pinMode(PIR_PIN_DRIVE_IN, INPUT);
   //SETUP LIGHT DETECTION
-  //pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
+  pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
   pinMode(PIN_LIGHT_DETECTION_DRIVE_IN, INPUT);
 }
 
 void loop() {
-  int lightIntensity = analogRead(PIN_LIGHT_DETECTION_ENTRANCE);
-  unsigned long burningDuration = MIN_LIGHT_DURATION;
-  if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
+  int lightIntensity = readLightIntensity();
+
+  while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
+    Serial.println("Ready to turn light on");
     while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
-      enableLight();
-      delay(burningDuration);
+      Serial.println("MOTION DETECTED");
+      unsigned int duration = enableLight();
+      delay(duration);
     }
-
-
     while (digitalRead(PIR_PIN_ENTRANCE) == LOW) {
+      Serial.println("NO MOTION DETECTED... TURN OFF THE LIGHT");
       disableLight();
     }
   }
 }
 
-void enableLight() {
+unsigned int enableLight() {
+  unsigned int burningDuration = calculateBurningDuration();
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       leds[n] = Candle;
@@ -61,6 +65,7 @@ void enableLight() {
     }
     delay(20);
   }
+  return burningDuration;
 }
 
 void disableLight() {
@@ -76,10 +81,17 @@ void disableLight() {
   }
 }
 
-int calculateBurningDuration() {
-  unsigned long duration = (analogRead(PIN_LIGHT_DURATION) * 5000);
+int readLightIntensity() {
+  int intensity = analogRead(PIN_LIGHT_DETECTION_ENTRANCE);
+  Serial.println("Intensity");
+  Serial.println(intensity);
+  return intensity;
+}
+
+unsigned int calculateBurningDuration() {
+  unsigned int duration = (analogRead(PIN_LIGHT_DURATION) * 5000);
   Serial.println("READ DURATION SECONDS:");
-  Serial.println(duration/1000);
+  Serial.println(duration / 1000);
   if (duration < MIN_LIGHT_DURATION) {
     duration =  MIN_LIGHT_DURATION;
   }
