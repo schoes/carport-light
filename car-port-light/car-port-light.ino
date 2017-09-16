@@ -19,38 +19,58 @@ CRGB leds[NUM_LEDS];
 boolean motionDetected = false;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
+unsigned long previousMillis = 0;
+
 void setup() {
   // enable loggin
   Serial.begin(9600);
-  delay(3000);
-  //SETUP LEDS
-  FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
-  FastLED.clear();
-  FastLED.show();
-  //SETUP MOTION DETECTION
-  pinMode(PIR_PIN_ENTRANCE, INPUT);
-  pinMode(PIR_PIN_DRIVE_IN, INPUT);
-  //SETUP LIGHT DETECTION
-  pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
-  pinMode(PIN_LIGHT_DETECTION_DRIVE_IN, INPUT);
+  setupLeds();
+  setupMotionDetection();
+  setupLightIntenseDetection();
 }
 
 void loop() {
   int lightIntensity = readLightIntensity();
 
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
+    unsigned long currentMillis = millis();
     Serial.println("Ready to turn light on");
-    while (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
+    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
       Serial.println("MOTION DETECTED");
-      unsigned int duration = enableLight();
-      delay(duration);
+      unsigned long burningDuration = getBurnDuration();
+      if (currentMillis - previousMillis >= burningDuration) {
+        enableLight();
+      }
+      else {
+        disableLight();
+      }
     }
-    while (digitalRead(PIR_PIN_ENTRANCE) == LOW) {
-      Serial.println("NO MOTION DETECTED... TURN OFF THE LIGHT");
+    else {
       disableLight();
     }
   }
 }
+
+void setupLeds() {
+  //SETUP LEDS
+  delay(3000);
+  FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  FastLED.clear();
+  FastLED.show();
+}
+
+void setupMotionDetection() {
+  //SETUP MOTION DETECTION
+  pinMode(PIR_PIN_ENTRANCE, INPUT);
+  pinMode(PIR_PIN_DRIVE_IN, INPUT);
+}
+
+void setupLightIntenseDetection() {
+  //SETUP LIGHT DETECTION
+  pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
+  pinMode(PIN_LIGHT_DETECTION_DRIVE_IN, INPUT);
+}
+
 
 unsigned int enableLight() {
   unsigned int burningDuration = calculateBurningDuration();
@@ -97,6 +117,12 @@ unsigned int calculateBurningDuration() {
   }
   Serial.println("CALCULATED DURATION SECONDS:");
   Serial.println(duration / 1000);
+  return duration;
+
+}
+
+unsigned long getBurnDuration() {
+  unsigned long duration = MIN_LIGHT_DURATION;
   return duration;
 
 }
