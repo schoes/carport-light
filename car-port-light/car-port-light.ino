@@ -1,7 +1,7 @@
 #include <FastLED.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
-#define NUM_LEDS 50
+#define NUM_LEDS 600
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
 CRGB leds[NUM_LEDS];
@@ -73,7 +73,7 @@ void setupLightIntenseDetection() {
 
 
 unsigned int enableLight() {
-  unsigned int burningDuration = calculateBurningDuration();
+  unsigned int burningDuration = getBurnDuration();
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       leds[n] = Candle;
@@ -106,19 +106,6 @@ int readLightIntensity() {
   Serial.println("Intensity");
   Serial.println(intensity);
   return intensity;
-}
-
-unsigned int calculateBurningDuration() {
-  unsigned int duration = (analogRead(PIN_LIGHT_DURATION) * 5000);
-  Serial.println("READ DURATION SECONDS:");
-  Serial.println(duration / 1000);
-  if (duration < MIN_LIGHT_DURATION) {
-    duration =  MIN_LIGHT_DURATION;
-  }
-  Serial.println("CALCULATED DURATION SECONDS:");
-  Serial.println(duration / 1000);
-  return duration;
-
 }
 
 unsigned long getBurnDuration() {
