@@ -13,7 +13,7 @@ CRGB leds[NUM_LEDS];
 #define PIN_LIGHT_DURATION 1
 #define PIN_LIGHT_DETECTION_DRIVE_IN 10
 // check the real darkenss outside
-#define LIGHT_INTENSE_BREAKPOINT 200
+#define LIGHT_INTENSE_BREAKPOINT 70
 #define MIN_LIGHT_DURATION 30000
 
 boolean motionDetected = false;
@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
   int lightIntensity = readLightIntensity();
-
+  delay(20000);
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     unsigned long currentMillis = millis();
     Serial.println("Ready to turn light on");
