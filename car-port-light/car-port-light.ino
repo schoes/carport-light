@@ -9,17 +9,15 @@ CRGB leds[NUM_LEDS];
 #define PIR_PIN_ENTRANCE 9
 #define PIR_PIN_DRIVE_IN 10
 //LIGHT INTENSE DETECTION --> Analog INPUT
-#define PIN_LIGHT_DETECTION_ENTRANCE 0
-#define PIN_LIGHT_DURATION 1
-#define PIN_LIGHT_DETECTION_DRIVE_IN 10
+#define LIGHT_DETECTION_PIN_ENTRANCE A0
+#define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
-#define LIGHT_INTENSE_BREAKPOINT 70
-#define MIN_LIGHT_DURATION 30000
+#define LIGHT_INTENSE_BREAKPOINT 6.0
 
-boolean motionDetected = false;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
 unsigned long previousMillis = 0;
+unsigned long minLightDuration = 30000;
 
 void setup() {
   // enable loggin
@@ -31,24 +29,18 @@ void setup() {
 
 void loop() {
   int lightIntensity = readLightIntensity();
-  delay(20000);
+
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
-    unsigned long currentMillis = millis();
     Serial.println("Ready to turn light on");
     if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
+      unsigned long currentMillis = millis();
       Serial.println("MOTION DETECTED");
-      unsigned long burningDuration = getBurnDuration();
-      if (currentMillis - previousMillis >= burningDuration) {
-        enableLight();
-      }
-      else {
-        disableLight();
-      }
-    }
-    else {
+      enableLight();
+      delay(getBurnDuration());
       disableLight();
     }
   }
+  disableLight();
 }
 
 void setupLeds() {
@@ -62,55 +54,48 @@ void setupLeds() {
 void setupMotionDetection() {
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
-  pinMode(PIR_PIN_DRIVE_IN, INPUT);
 }
 
 void setupLightIntenseDetection() {
-  //SETUP LIGHT DETECTION
-  pinMode(PIN_LIGHT_DETECTION_ENTRANCE, INPUT);
-  pinMode(PIN_LIGHT_DETECTION_DRIVE_IN, INPUT);
 }
 
 
-unsigned int enableLight() {
-  unsigned int burningDuration = getBurnDuration();
+void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       leds[n] = Candle;
       leds[n].maximizeBrightness(fader);
-      if (n % 10 == 0) {
-        FastLED.show();
-      }
-
     }
     delay(20);
+    FastLED.show();
   }
-  return burningDuration;
 }
 
 void disableLight() {
   for (int fader = 0; fader < 255; fader += 5) {
     for (int n = NUM_LEDS; n >= 0 ; n--) {
       leds[n].fadeToBlackBy(fader);
-      if (n % 10 == 0) {
-        FastLED.show();
-      }
-
     }
     delay(20);
+    FastLED.show();
   }
 }
 
-int readLightIntensity() {
-  int intensity = analogRead(PIN_LIGHT_DETECTION_ENTRANCE);
-  Serial.println("Intensity");
-  Serial.println(intensity);
-  return intensity;
+float readLightIntensity() {
+  int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
+  float volts0 = intensity * 0.004887585532746823069403714565; // calculate the voltage
+  Serial.print(volts0);  //raw voltage
+  Serial.println(" Volts.");
+  float lux = (500 / ((10.72 / (5 - volts0)) * volts0));
+  Serial.print((500 / ((10.72 / (5 - volts0))*volts0)), 2); //lux calculation
+  Serial.print(" Lux.");
+  Serial.println("");
+  delay(2000);
+  return lux;
 }
 
 unsigned long getBurnDuration() {
-  unsigned long duration = MIN_LIGHT_DURATION;
-  return duration;
+  return minLightDuration;
 
 }
 
