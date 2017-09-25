@@ -45,6 +45,7 @@ void loop() {
 
 void setupLeds() {
   //SETUP LEDS
+  pinMode(NEOPIXEL_PIN,OUTPUT);
   delay(3000);
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.clear();
