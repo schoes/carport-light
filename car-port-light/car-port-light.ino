@@ -3,7 +3,7 @@
 #define NEOPIXEL_PIN 6
 #define NUM_LEDS 600
 #define LED_TYPE WS2811
-#define COLOR_ORDER GRB
+#define COLOR_ORDER BRG
 CRGB leds[NUM_LEDS];
 // MOTION DETECTION
 #define PIR_PIN_ENTRANCE 9
@@ -50,6 +50,8 @@ void setupLeds() {
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.clear();
   FastLED.show();
+  enableLight();
+  disableLight();
 }
 
 void setupMotionDetection() {
@@ -64,7 +66,8 @@ void setupLightIntenseDetection() {
 void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
-      leds[n] = Candle;
+     // leds[n].setRGB(255, 147, 41);
+     leds[n] = CRGB::HotPink;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
