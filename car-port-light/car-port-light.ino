@@ -24,11 +24,10 @@ void setup() {
   Serial.begin(9600);
   setupLeds();
   setupMotionDetection();
-  setupLightIntenseDetection();
 }
 
 void loop() {
-  int lightIntensity = readLightIntensity();
+  float lightIntensity = readLightIntensity();
 
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     Serial.println("Ready to turn light on");
@@ -59,15 +58,12 @@ void setupMotionDetection() {
   pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
-void setupLightIntenseDetection() {
-}
-
 
 void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
-     // leds[n].setRGB(255, 147, 41);
-     leds[n] = CRGB::HotPink;
+      // leds[n].setRGB(255, 147, 41);
+      leds[n] = CRGB::Linen;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
