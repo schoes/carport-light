@@ -50,6 +50,7 @@ void setupLeds() {
   FastLED.clear();
   FastLED.show();
   enableLight();
+  delay(1000);
   disableLight();
 }
 
@@ -63,7 +64,7 @@ void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       // leds[n].setRGB(255, 147, 41);
-      leds[n] = CRGB::Linen;
+      leds[n] = CRGB::Gold;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
