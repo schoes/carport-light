@@ -1,7 +1,7 @@
 #include <FastLED.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
-#define NUM_LEDS 600
+#define NUM_LEDS 1500
 #define LED_TYPE WS2811
 #define COLOR_ORDER BRG
 CRGB leds[NUM_LEDS];
