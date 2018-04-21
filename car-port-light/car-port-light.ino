@@ -1,7 +1,7 @@
 #include <FastLED.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
-#define NUM_LEDS 1500
+#define NUM_LEDS 900
 #define LED_TYPE WS2811
 #define COLOR_ORDER BRG
 CRGB leds[NUM_LEDS];
@@ -12,7 +12,8 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
 #define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
-#define LIGHT_INTENSE_BREAKPOINT 6.0
+// https://en.wikipedia.org/wiki/Lux
+#define LIGHT_INTENSE_BREAKPOINT 40.0
 
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
@@ -21,14 +22,14 @@ unsigned long minLightDuration = 30000;
 
 void setup() {
   // enable loggin
-  Serial.begin(9600);
+  //Serial.begin(9600);
   setupLeds();
   setupMotionDetection();
 }
 
 void loop() {
-  float lightIntensity = readLightIntensity();
-
+  float lightIntensity = readLightIntensityInLUX();
+  delay(300000);
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     Serial.println("Ready to turn light on");
     if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
@@ -82,7 +83,7 @@ void disableLight() {
   }
 }
 
-float readLightIntensity() {
+float readLightIntensityInLUX() {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
   float volts0 = intensity * 0.004887585532746823069403714565; // calculate the voltage
   Serial.print(volts0);  //raw voltage
