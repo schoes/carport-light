@@ -65,7 +65,7 @@ void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       // leds[n].setRGB(255, 147, 41);
-      leds[n] = CRGB::Gold;
+      leds[n] = CRGB::Goldenrod;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
