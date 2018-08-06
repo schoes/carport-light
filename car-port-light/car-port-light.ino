@@ -13,7 +13,7 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 40.0
+#define LIGHT_INTENSE_BREAKPOINT 30.0
 
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
@@ -64,8 +64,8 @@ void setupMotionDetection() {
 void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
-      // leds[n].setRGB(255, 147, 41);
-      leds[n] = CRGB::Goldenrod;
+      //leds[n].setRGB(255, 147, 41);
+      leds[n] = CRGB::Gold;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
