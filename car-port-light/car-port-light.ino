@@ -13,7 +13,7 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 200.0
+#define LIGHT_INTENSE_BREAKPOINT 100.0
 
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
