@@ -13,7 +13,7 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 30.0
+#define LIGHT_INTENSE_BREAKPOINT 200.0
 
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
@@ -30,7 +30,7 @@ void setup() {
 void loop() {
   float lightIntensity = readLightIntensityInLUX();
   delay(300000);
-  while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
+  if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
     Serial.println("Ready to turn light on");
     if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
       unsigned long currentMillis = millis();
@@ -65,7 +65,8 @@ void enableLight() {
   for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
     for (int n = 0; n < NUM_LEDS ; n++) {
       //leds[n].setRGB(255, 147, 41);
-      leds[n] = CRGB::Gold;
+      //leds[n].setRGB(41, 147, 255);
+      leds[n] = CRGB::Yellow;
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
