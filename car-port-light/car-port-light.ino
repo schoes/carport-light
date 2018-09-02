@@ -23,7 +23,7 @@ float lightIntensity = 1000;
 void setup()
 {
   // enable loggin
-  Serial.begin(9600);
+  //Serial.begin(9600);
   setupLeds();
   setupMotionDetection();
 }
