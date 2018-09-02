@@ -16,14 +16,14 @@ CRGB leds[NUM_LEDS];
 #define SHOW_LED_COLOR_TIME_OUT 1000
 
 int fadeAmount = 5;
-int MAX_BRIGHTNESS = 255;
+int MAX_BRIGHTNESS = 200;
 unsigned long previousMillis = 0;
 unsigned long minLightDuration = 30000;
 float lightIntensity = 1000;
 void setup()
 {
   // enable loggin
-  //Serial.begin(9600);
+  Serial.begin(9600);
   setupLeds();
   setupMotionDetection();
 }
@@ -103,8 +103,11 @@ float readLightIntensityInLUX()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
   float volts0 = intensity * 0.004887585532746823069403714565; // calculate the voltage
-  Serial.print(volts0);                                        //raw voltage
-  Serial.println(" Volts.");
+  Serial.print(volts0);
+  if (volts0 <= 0)
+  {
+    return LIGHT_INTENSE_BREAKPOINT;
+  } //raw voltage
   float lux = (500 / ((10.72 / (5 - volts0)) * volts0));
   Serial.print(lux, 2); //lux calculation
   Serial.print(" Lux.");
