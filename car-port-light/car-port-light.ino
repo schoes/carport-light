@@ -7,13 +7,10 @@
 CRGB leds[NUM_LEDS];
 // MOTION DETECTION
 #define PIR_PIN_ENTRANCE 9
-#define PIR_PIN_DRIVE_IN 10
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
-#define LIGHT_DETECTION_PIN_DRIVE_IN A1
-// check the real darkenss outside
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 150.0
+#define LIGHT_INTENSE_BREAKPOINT 200.0
 #define CHECK_TIME_OUT 300000 // milliseconsd => 5 minutes
 #define SAFETY_LED_TIME_OUT 3000
 #define SHOW_LED_COLOR_TIME_OUT 1000
