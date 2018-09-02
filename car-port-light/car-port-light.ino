@@ -1,7 +1,7 @@
 #include <FastLED.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
-#define NUM_LEDS 900
+#define NUM_LEDS 600
 #define LED_TYPE WS2811
 #define COLOR_ORDER BRG
 CRGB leds[NUM_LEDS];
@@ -13,37 +13,48 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_DRIVE_IN A1
 // check the real darkenss outside
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 100.0
+#define LIGHT_INTENSE_BREAKPOINT 150.0
 
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 255;
 unsigned long previousMillis = 0;
 unsigned long minLightDuration = 30000;
-
-void setup() {
+float lightIntensity = 1000;
+void setup()
+{
   // enable loggin
   //Serial.begin(9600);
   setupLeds();
   setupMotionDetection();
 }
 
-void loop() {
-  float lightIntensity = readLightIntensityInLUX();
+void loop()
+{
   delay(300000);
-  if (lightIntensity <= LIGHT_INTENSE_BREAKPOINT) {
+  lightIntensity = readLightIntensityInLUX();
+
+  while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT)
+  {
     Serial.println("Ready to turn light on");
-    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
-      unsigned long currentMillis = millis();
+    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
+    {
+      //unsigned long currentMillis = millis();
       Serial.println("MOTION DETECTED");
       enableLight();
       delay(getBurnDuration());
       disableLight();
     }
+    else
+    {
+      lightIntensity = readLightIntensityInLUX();
+    }
   }
+
   disableLight();
 }
 
-void setupLeds() {
+void setupLeds()
+{
   //SETUP LEDS
   pinMode(NEOPIXEL_PIN, OUTPUT);
   delay(3000);
@@ -55,17 +66,18 @@ void setupLeds() {
   disableLight();
 }
 
-void setupMotionDetection() {
+void setupMotionDetection()
+{
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
-
-void enableLight() {
-  for (int fader = 0; fader < MAX_BRIGHTNESS ; fader += 5) {
-    for (int n = 0; n < NUM_LEDS ; n++) {
-      //leds[n].setRGB(255, 147, 41);
-      //leds[n].setRGB(41, 147, 255);
+void enableLight()
+{
+  for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
+  {
+    for (int n = 0; n < NUM_LEDS; n++)
+    {
       leds[n] = CRGB::Yellow;
       leds[n].maximizeBrightness(fader);
     }
@@ -74,9 +86,12 @@ void enableLight() {
   }
 }
 
-void disableLight() {
-  for (int fader = 0; fader < 255; fader += 5) {
-    for (int n = NUM_LEDS; n >= 0 ; n--) {
+void disableLight()
+{
+  for (int fader = 0; fader < 255; fader += 5)
+  {
+    for (int n = NUM_LEDS; n >= 0; n--)
+    {
       leds[n].fadeToBlackBy(fader);
     }
     delay(20);
@@ -84,10 +99,11 @@ void disableLight() {
   }
 }
 
-float readLightIntensityInLUX() {
+float readLightIntensityInLUX()
+{
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
   float volts0 = intensity * 0.004887585532746823069403714565; // calculate the voltage
-  Serial.print(volts0);  //raw voltage
+  Serial.print(volts0);                                        //raw voltage
   Serial.println(" Volts.");
   float lux = (500 / ((10.72 / (5 - volts0)) * volts0));
   Serial.print(lux, 2); //lux calculation
@@ -97,9 +113,7 @@ float readLightIntensityInLUX() {
   return lux;
 }
 
-unsigned long getBurnDuration() {
+unsigned long getBurnDuration()
+{
   return minLightDuration;
-
 }
-
-
