@@ -32,7 +32,7 @@ void loop()
 {
   delay(CHECK_TIME_OUT);
   lightIntensity = readLightIntensityInLUX();
-
+  bool lightOn = false;
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT)
   {
     Serial.println("Ready to turn light on");
@@ -40,13 +40,21 @@ void loop()
     {
       //unsigned long currentMillis = millis();
       Serial.println("MOTION DETECTED");
-      enableLight();
-      delay(getBurnDuration());
-      disableLight();
+      if (!lightOn)
+      {
+        Serial.println("Turn on the light");
+        enableLight();
+        lightOn = true;
+      }
     }
     else
     {
+      Serial.println("NO MORE MOTION DETECTED");
+      delay(getBurnDuration());
+      Serial.println("Will disable the light");
+      disableLight();
       lightIntensity = readLightIntensityInLUX();
+      lightOn = false;
     }
   }
 
