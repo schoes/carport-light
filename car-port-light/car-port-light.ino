@@ -20,6 +20,7 @@ int MAX_BRIGHTNESS = 200;
 unsigned long previousMillis = 0;
 unsigned long minLightDuration = 30000;
 float lightIntensity = 1000;
+bool lightOn = false;
 void setup()
 {
   // enable loggin
@@ -32,7 +33,7 @@ void loop()
 {
   delay(CHECK_TIME_OUT);
   lightIntensity = readLightIntensityInLUX();
-  bool lightOn = false;
+
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT)
   {
     Serial.println("Ready to turn light on");
