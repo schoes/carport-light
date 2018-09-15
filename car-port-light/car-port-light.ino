@@ -31,39 +31,36 @@ void setup()
 
 void loop()
 {
+  disableLight();
   delay(CHECK_TIME_OUT);
   lightIntensity = readLightIntensityInLUX();
 
   while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT)
   {
-    Serial.println("Ready to turn light on");
+    Serial.println("==GET INTO ACTIVE STATE==");
     if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
     {
       //unsigned long currentMillis = millis();
-      Serial.println("MOTION DETECTED");
+      Serial.println("==MOTION DETECTED==");
       if (!lightOn)
       {
-        Serial.println("Turn on the light");
         enableLight();
-        lightOn = true;
       }
     }
     else
     {
-      Serial.println("NO MORE MOTION DETECTED");
+      Serial.println("==NO MORE MOTION DETECTED==");
       delay(getBurnDuration());
-      Serial.println("Will disable the light");
+
       disableLight();
       lightIntensity = readLightIntensityInLUX();
-      lightOn = false;
     }
   }
-
-  disableLight();
 }
 
 void setupLeds()
 {
+  Serial.println("==SETUP THE LED STRIP==");
   //SETUP LEDS
   pinMode(NEOPIXEL_PIN, OUTPUT);
   delay(SAFETY_LED_TIME_OUT);
@@ -77,12 +74,14 @@ void setupLeds()
 
 void setupMotionDetection()
 {
+  Serial.println("==SETUP THE MOTION DETECTION==");
   //SETUP MOTION DETECTION
   pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
 void enableLight()
 {
+  Serial.println("Turn on the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
   {
     for (int n = 0; n < NUM_LEDS; n++)
@@ -93,10 +92,12 @@ void enableLight()
     delay(20);
     FastLED.show();
   }
+  lightOn = true;
 }
 
 void disableLight()
 {
+  Serial.println("Will disable the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
   {
     for (int n = NUM_LEDS; n >= 0; n--)
@@ -106,6 +107,7 @@ void disableLight()
     delay(20);
     FastLED.show();
   }
+  lightOn = false;
 }
 
 float readLightIntensityInLUX()
