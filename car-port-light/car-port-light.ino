@@ -33,27 +33,22 @@ void loop()
 {
   disableLight();
   delay(CHECK_TIME_OUT);
-  lightIntensity = readLightIntensityInLUX();
-
-  while (lightIntensity <= LIGHT_INTENSE_BREAKPOINT)
+  while (readLightIntensityInLUX() <= LIGHT_INTENSE_BREAKPOINT)
   {
     Serial.println("==GET INTO ACTIVE STATE==");
-    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
+    if (!lightOn)
     {
-      //unsigned long currentMillis = millis();
-      Serial.println("==MOTION DETECTED==");
-      if (!lightOn)
+      if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
       {
-        enableLight();
+        Serial.println("==MOTION DETECTED==");
+        lightOn = enableLight();
+        delay(getBurnDuration());
       }
     }
     else
     {
       Serial.println("==NO MORE MOTION DETECTED==");
-      delay(getBurnDuration());
-
-      disableLight();
-      lightIntensity = readLightIntensityInLUX();
+      lightOn = disableLight();
     }
   }
 }
@@ -79,7 +74,7 @@ void setupMotionDetection()
   pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
-void enableLight()
+bool enableLight()
 {
   Serial.println("Turn on the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
@@ -92,10 +87,10 @@ void enableLight()
     delay(20);
     FastLED.show();
   }
-  lightOn = true;
+  return true;
 }
 
-void disableLight()
+bool disableLight()
 {
   Serial.println("Will disable the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
@@ -107,7 +102,8 @@ void disableLight()
     delay(20);
     FastLED.show();
   }
-  lightOn = false;
+
+  return false;
 }
 
 float readLightIntensityInLUX()
