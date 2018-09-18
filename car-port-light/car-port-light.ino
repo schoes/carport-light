@@ -16,10 +16,11 @@ int CHECK_TIME_OUT = 3000;
 int SAFETY_LED_TIME_OUT = 3000;
 int SHOW_LED_COLOR_TIME_OUT = 1000;
 int MIN_BURN_DURATION = 30000;
-float LIGHT_INTENSE_BREAKPOINT = 1.0;
+int LIGHT_INTENSE_BREAKPOINT = 1;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 200;
 bool lightOn = false;
+bool motionDetected = false;
 void setup()
 {
   Serial.begin(9600);
@@ -30,25 +31,23 @@ void setup()
 
 void loop()
 {
-  delay(CHECK_TIME_OUT);
-  float intensity = readLightIntensityInLUX();
-  if (LIGHT_INTENSE_BREAKPOINT > intensity)
+  while (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
   {
-    Serial.println("==READY TO TURN LIGHT ON==");
     if (!lightOn)
     {
-      if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
+      Serial.println("CHECK THE LIGHT OUTSIDE");
+      if (LIGHT_INTENSE_BREAKPOINT >= readLightIntensityInLUX())
       {
-        Serial.println("==MOTION DETECTED==");
+        Serial.println("GET SOME LIGHT");
         lightOn = enableLight();
-        delay(getBurnDuration());
       }
     }
-    else
-    {
-      Serial.println("==NO MORE MOTION DETECTED==");
-      lightOn = disableLight();
-    }
+  }
+  Serial.println("NO MOVEMENTS");
+  if (lightOn)
+  {
+    delay(getBurnDuration());
+    lightOn = disableLight();
   }
 }
 
@@ -94,7 +93,6 @@ bool enableLight()
 
 bool disableLight()
 {
-  Serial.println("Disable the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
   {
     for (int n = NUM_LEDS; n >= 0; n--)
@@ -108,27 +106,27 @@ bool disableLight()
   return false;
 }
 
-float readLightIntensityInLUX()
+int readLightIntensityInLUX()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
   Serial.println("intensity");
   Serial.print(intensity);
   Serial.println(" ");
-  //delay(20);
+  delay(20);
   float volts = intensity * 0.004887585532746823069403714565; // calculate the voltage
   Serial.print(volts);
   if (volts <= 0)
   {
     return LIGHT_INTENSE_BREAKPOINT;
   } //raw voltage
-  float lux = (500 / ((10.72 / (5 - volts)) * volts));
+  int lux = (500 / ((10.72 / (5 - volts)) * volts));
   Serial.print(lux, 5); //lux calculation
-  Serial.print(" Lux.");
-  //delay(20);
+  Serial.println(" Lux.");
+  delay(20);
   return lux;
 }
 
-unsigned long getBurnDuration()
+int getBurnDuration()
 {
   return MIN_BURN_DURATION;
 }
