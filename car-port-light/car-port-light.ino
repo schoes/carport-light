@@ -10,27 +10,31 @@ CRGB leds[NUM_LEDS];
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
 // https://en.wikipedia.org/wiki/Lux
-#define LIGHT_INTENSE_BREAKPOINT 200.0
-#define CHECK_TIME_OUT 300000 // milliseconsd => 5 minutes
-#define SAFETY_LED_TIME_OUT 3000
-#define SHOW_LED_COLOR_TIME_OUT 1000
-#define MIN_BURN_DURATION 30000
+
+//#define CHECK_TIME_OUT 300000 // milliseconsd => 5 minutes
+int CHECK_TIME_OUT = 3000;
+int SAFETY_LED_TIME_OUT = 3000;
+int SHOW_LED_COLOR_TIME_OUT = 1000;
+int MIN_BURN_DURATION = 30000;
+float LIGHT_INTENSE_BREAKPOINT = 1.0;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 200;
 bool lightOn = false;
 void setup()
 {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   setupMotionDetection();
   setupLeds();
+  //showLedColor();
 }
 
 void loop()
 {
-  disableLight();
   delay(CHECK_TIME_OUT);
-  while (readLightIntensityInLUX() <= LIGHT_INTENSE_BREAKPOINT)
+  float intensity = readLightIntensityInLUX();
+  if (LIGHT_INTENSE_BREAKPOINT > intensity)
   {
+    Serial.println("==READY TO TURN LIGHT ON==");
     if (!lightOn)
     {
       if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
@@ -57,6 +61,10 @@ void setupLeds()
   FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.clear();
   FastLED.show();
+}
+
+void showLedColor()
+{
   enableLight();
   delay(SHOW_LED_COLOR_TIME_OUT);
   disableLight();
@@ -65,7 +73,7 @@ void setupLeds()
 void setupMotionDetection()
 {
   pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
-  pinMode(PIR_PIN_ENTRANCE, INPUT);
+  //pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
 bool enableLight()
@@ -86,7 +94,7 @@ bool enableLight()
 
 bool disableLight()
 {
-  Serial.println("Will disable the light");
+  Serial.println("Disable the light");
   for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
   {
     for (int n = NUM_LEDS; n >= 0; n--)
@@ -103,6 +111,10 @@ bool disableLight()
 float readLightIntensityInLUX()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
+  Serial.println("intensity");
+  Serial.print(intensity);
+  Serial.println(" ");
+  //delay(20);
   float volts = intensity * 0.004887585532746823069403714565; // calculate the voltage
   Serial.print(volts);
   if (volts <= 0)
@@ -110,8 +122,9 @@ float readLightIntensityInLUX()
     return LIGHT_INTENSE_BREAKPOINT;
   } //raw voltage
   float lux = (500 / ((10.72 / (5 - volts)) * volts));
-  Serial.print(lux, 2); //lux calculation
+  Serial.print(lux, 5); //lux calculation
   Serial.print(" Lux.");
+  //delay(20);
   return lux;
 }
 
