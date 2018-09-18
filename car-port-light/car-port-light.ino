@@ -14,19 +14,15 @@ CRGB leds[NUM_LEDS];
 #define CHECK_TIME_OUT 300000 // milliseconsd => 5 minutes
 #define SAFETY_LED_TIME_OUT 3000
 #define SHOW_LED_COLOR_TIME_OUT 1000
-
+#define MIN_BURN_DURATION 30000
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 200;
-unsigned long previousMillis = 0;
-unsigned long minLightDuration = 30000;
-float lightIntensity = 1000;
 bool lightOn = false;
 void setup()
 {
-  // enable loggin
   //Serial.begin(9600);
-  setupLeds();
   setupMotionDetection();
+  setupLeds();
 }
 
 void loop()
@@ -35,7 +31,6 @@ void loop()
   delay(CHECK_TIME_OUT);
   while (readLightIntensityInLUX() <= LIGHT_INTENSE_BREAKPOINT)
   {
-    Serial.println("==GET INTO ACTIVE STATE==");
     if (!lightOn)
     {
       if (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
@@ -69,8 +64,7 @@ void setupLeds()
 
 void setupMotionDetection()
 {
-  Serial.println("==SETUP THE MOTION DETECTION==");
-  //SETUP MOTION DETECTION
+  pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
   pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
@@ -109,21 +103,19 @@ bool disableLight()
 float readLightIntensityInLUX()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
-  float volts0 = intensity * 0.004887585532746823069403714565; // calculate the voltage
-  Serial.print(volts0);
-  if (volts0 <= 0)
+  float volts = intensity * 0.004887585532746823069403714565; // calculate the voltage
+  Serial.print(volts);
+  if (volts <= 0)
   {
     return LIGHT_INTENSE_BREAKPOINT;
   } //raw voltage
-  float lux = (500 / ((10.72 / (5 - volts0)) * volts0));
+  float lux = (500 / ((10.72 / (5 - volts)) * volts));
   Serial.print(lux, 2); //lux calculation
   Serial.print(" Lux.");
-  Serial.println("");
-  delay(2000);
   return lux;
 }
 
 unsigned long getBurnDuration()
 {
-  return minLightDuration;
+  return MIN_BURN_DURATION;
 }
