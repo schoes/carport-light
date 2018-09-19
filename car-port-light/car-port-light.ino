@@ -19,10 +19,10 @@ boolean lightOn = false;
 bool motionDetected = false;
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   setupMotionDetection();
   setupLeds();
-  //showLedColor();
+  showLedColor();
 }
 
 void loop()
