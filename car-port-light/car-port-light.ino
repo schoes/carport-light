@@ -9,13 +9,16 @@ CRGB leds[NUM_LEDS];
 #define PIR_PIN_ENTRANCE 9
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
-#define BURN_DURATIUON_PTENTIO A1
+#define BURN_DURATIUON_POTENTIO A1
+#define LED_BRIGHTNES_POTENTIO A2
 int SAFETY_LED_TIME_OUT = 3000;
 int SHOW_LED_COLOR_TIME_OUT = 1000;
 int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int fadeAmount = 5;
-int MAX_BRIGHTNESS = 200;
+int MAX_BRIGHTNESS = 255;
+int MIN_BRIGHTNESS = 100;
+int actualBrightness = MAX_BRIGHTNESS;
 boolean lightOn = false;
 bool motionDetected = false;
 void setup()
@@ -32,6 +35,7 @@ void loop()
   {
     if (!lightOn)
     {
+      actualBrightness = getLedBrightness();
       Serial.println("CHECK THE LIGHT OUTSIDE");
       if (shouldEnableLight())
       {
@@ -69,13 +73,12 @@ void showLedColor()
 void setupMotionDetection()
 {
   pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
-  //pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
 bool enableLight()
 {
   Serial.println("Turn on the light");
-  for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
+  int bright for (int fader = 0; fader < actualBrightness; fader += 5)
   {
     for (int n = 0; n < NUM_LEDS; n++)
     {
@@ -90,7 +93,7 @@ bool enableLight()
 
 bool disableLight()
 {
-  for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
+  for (int fader = 0; fader < actualBrightness; fader += 5)
   {
     for (int n = NUM_LEDS; n >= 0; n--)
     {
@@ -112,7 +115,36 @@ bool shouldEnableLight()
   return intensity <= LIGHT_INTENSE_BREAKPOINT;
 }
 
+int getLedBrightness()
+{
+  // value between 0 and 1023
+  int brightness = analogRead(LED_BRIGHTNES_POTENTIO) / 4;
+
+  if (brightness > MAX_BRIGHTNESS)
+  {
+    return MAX_BRIGHTNESS;
+  }
+  else if (brightness < MIN_BRIGHTNESS)
+  {
+    return MIN_BRIGHTNESS;
+  }
+  else
+  {
+    return brightness;
+  }
+}
+
 int getBurnDuration()
 {
-  return MIN_BURN_DURATION;
+  // value between 0 and 1023
+  int burnDuration = analogRead(BURN_DURATIUON_POTENTIO) * 290;
+
+  if (burnDuration > MIN_BURN_DURATION)
+  {
+    return burnDuration;
+  }
+  else
+  {
+    return MIN_BURN_DURATION;
+  }
 }
