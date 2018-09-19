@@ -9,17 +9,13 @@ CRGB leds[NUM_LEDS];
 #define PIR_PIN_ENTRANCE 9
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
-// https://en.wikipedia.org/wiki/Lux
-
-//#define CHECK_TIME_OUT 300000 // milliseconsd => 5 minutes
-int CHECK_TIME_OUT = 3000;
 int SAFETY_LED_TIME_OUT = 3000;
 int SHOW_LED_COLOR_TIME_OUT = 1000;
 int MIN_BURN_DURATION = 30000;
-int LIGHT_INTENSE_BREAKPOINT = 1;
+int LIGHT_INTENSE_BREAKPOINT = 20;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 200;
-bool lightOn = false;
+boolean lightOn = false;
 bool motionDetected = false;
 void setup()
 {
@@ -36,7 +32,7 @@ void loop()
     if (!lightOn)
     {
       Serial.println("CHECK THE LIGHT OUTSIDE");
-      if (LIGHT_INTENSE_BREAKPOINT >= readLightIntensityInLUX())
+      if (shouldEnableLight())
       {
         Serial.println("GET SOME LIGHT");
         lightOn = enableLight();
@@ -106,24 +102,13 @@ bool disableLight()
   return false;
 }
 
-int readLightIntensityInLUX()
+bool shouldEnableLight()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
-  Serial.println("intensity");
+  Serial.print("intensity:");
   Serial.print(intensity);
   Serial.println(" ");
-  delay(20);
-  float volts = intensity * 0.004887585532746823069403714565; // calculate the voltage
-  Serial.print(volts);
-  if (volts <= 0)
-  {
-    return LIGHT_INTENSE_BREAKPOINT;
-  } //raw voltage
-  int lux = (500 / ((10.72 / (5 - volts)) * volts));
-  Serial.print(lux, 5); //lux calculation
-  Serial.println(" Lux.");
-  delay(20);
-  return lux;
+  return intensity <= LIGHT_INTENSE_BREAKPOINT;
 }
 
 int getBurnDuration()
