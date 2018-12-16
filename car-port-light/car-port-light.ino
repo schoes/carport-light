@@ -11,7 +11,7 @@ CRGB leds[NUM_LEDS];
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
 int SAFETY_LED_TIME_OUT = 3000;
 int SHOW_LED_COLOR_TIME_OUT = 2000;
-int MIN_BURN_DURATION = 60000;
+int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int fadeAmount = 5;
 int MAX_BRIGHTNESS = 200;
@@ -83,17 +83,14 @@ bool enableLight()
       {
         leds[n] = CRGB::Gold;
       }
-      else
-      {
-        leds[n] = CRGB::SandyBrown;
+      
+      else{
+        leds[n] = CRGB::Yellow;
       }
+        
+      
 
       leds[n].maximizeBrightness(fader);
-
-      if (n % 50 == 0)
-      {
-        delay(1000);
-      }
     }
     delay(20);
     FastLED.show();
