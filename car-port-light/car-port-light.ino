@@ -1,7 +1,7 @@
 #include <FastLED.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
-#define NUM_LEDS 600
+#define NUM_LEDS 200
 #define LED_TYPE WS2811
 #define COLOR_ORDER BRG
 CRGB leds[NUM_LEDS];
@@ -78,18 +78,7 @@ bool enableLight()
   {
     for (int n = 0; n < NUM_LEDS; n++)
     {
-
-      if (n % 2 == 0)
-      {
-        leds[n] = CRGB::Gold;
-      }
-      
-      else{
-        leds[n] = CRGB::Yellow;
-      }
-        
-      
-
+      leds[n] = CRGB(255, 120, 5);
       leds[n].maximizeBrightness(fader);
     }
     delay(20);
