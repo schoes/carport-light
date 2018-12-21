@@ -2,7 +2,6 @@
 //LED WS2811
 #define NEOPIXEL_PIN 6
 #define NUM_LEDS 200
-Adafruit_NeoPixel strip;
 // MOTION DETECTION
 #define PIR_PIN_ENTRANCE 9
 //LIGHT INTENSE DETECTION --> Analog INPUT
@@ -12,13 +11,15 @@ int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
 bool lightOn = false;
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 
 void setup()
 {
-  //Serial.begin(9600);
-  setupLeds();
-  showLedColor();
-  setupMotionDetection();
+  strip.begin();
+  strip.show();
+  enableLight();
+  disableLight();
+  pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
 }
 
 void loop()
@@ -27,15 +28,12 @@ void loop()
   {
     if (!lightOn)
     {
-      Serial.println("CHECK THE LIGHT OUTSIDE");
       if (shouldEnableLight())
       {
-        Serial.println("GET SOME LIGHT");
         enableLight();
       }
     }
   }
-  Serial.println("NO MOVEMENTS");
   if (lightOn)
   {
     delay(getBurnDuration());
@@ -45,15 +43,11 @@ void loop()
 bool shouldEnableLight()
 {
   int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
-  Serial.print("intensity:");
-  Serial.print(intensity);
-  Serial.println(" ");
   return intensity <= LIGHT_INTENSE_BREAKPOINT;
 }
 
 void enableLight()
 {
-  Serial.println("Turn on the light");
   for (int n = 0; n < NUM_LEDS; n++)
   {
     strip.setPixelColor(n, 255, 120, 5);
@@ -77,25 +71,4 @@ void disableLight()
 int getBurnDuration()
 {
   return MIN_BURN_DURATION;
-}
-
-void setupLeds()
-{
-  Serial.println("==SETUP THE LED STRIP==");
-  pinMode(NEOPIXEL_PIN, OUTPUT);
-  strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
-  strip.begin();
-  strip.show();
-}
-
-void showLedColor()
-{
-  enableLight();
-  delay(SHOW_LED_COLOR_TIME_OUT);
-  disableLight();
-}
-
-void setupMotionDetection()
-{
-  pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
 }
