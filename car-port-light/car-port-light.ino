@@ -1,10 +1,8 @@
-#include <FastLED.h>
+#include <Adafruit_NeoPixel.h>
 //LED WS2811
 #define NEOPIXEL_PIN 6
 #define NUM_LEDS 200
-#define LED_TYPE WS2811
-#define COLOR_ORDER BRG
-CRGB leds[NUM_LEDS];
+Adafruit_NeoPixel strip;
 // MOTION DETECTION
 #define PIR_PIN_ENTRANCE 9
 //LIGHT INTENSE DETECTION --> Analog INPUT
@@ -19,6 +17,7 @@ boolean lightOn = false;
 bool motionDetected = false;
 void setup()
 {
+
   //Serial.begin(9600);
   setupMotionDetection();
   setupLeds();
@@ -52,10 +51,9 @@ void setupLeds()
   Serial.println("==SETUP THE LED STRIP==");
   //SETUP LEDS
   pinMode(NEOPIXEL_PIN, OUTPUT);
-  delay(SAFETY_LED_TIME_OUT);
-  FastLED.addLeds<LED_TYPE, NEOPIXEL_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.clear();
-  FastLED.show();
+  strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
+  strip.begin();
+  strip.show();
 }
 
 void showLedColor()
@@ -74,17 +72,14 @@ void setupMotionDetection()
 bool enableLight()
 {
   Serial.println("Turn on the light");
-  for (int fader = 0; fader < MAX_BRIGHTNESS; fader += 5)
+  for (int n = 0; n < NUM_LEDS; n++)
   {
-    for (int n = 0; n < NUM_LEDS; n++)
-    {
-      leds[n] = CRGB(255, 120, 5);
-      leds[n].maximizeBrightness(fader);
-    }
-    delay(20);
-    FastLED.show();
+    strip.setPixelColor(n, 255, 120, 5);
+    strip.show();
+    delay(50);
   }
-  return true;
+}
+return true;
 }
 
 bool disableLight()
