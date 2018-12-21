@@ -66,7 +66,6 @@ void showLedColor()
 void setupMotionDetection()
 {
   pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
-  //pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
 bool enableLight()
@@ -88,10 +87,10 @@ bool disableLight()
   {
     for (int n = NUM_LEDS; n >= 0; n--)
     {
-      leds[n].fadeToBlackBy(fader);
+      leds.setPixelColor(n, 0, 0, 0);
+      strip.show();
+      delay(50);
     }
-    delay(20);
-    FastLED.show();
   }
 
   return false;
