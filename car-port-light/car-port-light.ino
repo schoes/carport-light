@@ -15,10 +15,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 
 void setup()
 {
-  strip.begin();
-  strip.show();
-  enableLight();
-  disableLight();
+  setupLEDStrip();
   pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
 }
 
@@ -39,6 +36,15 @@ void loop()
     delay(getBurnDuration());
     disableLight();
   }
+}
+void setupLEDStrip()
+{
+  strip.begin();
+  strip.setBrightness(64);
+  strip.show();
+  enableLight();
+  delay(SHOW_LED_COLOR_TIME_OUT);
+  disableLight();
 }
 bool shouldEnableLight()
 {
