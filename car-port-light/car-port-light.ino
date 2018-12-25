@@ -40,7 +40,7 @@ void loop()
 void setupLEDStrip()
 {
   strip.begin();
-  strip.setBrightness(64);
+  //strip.setBrightness(64);
   strip.show();
   enableLight();
   delay(SHOW_LED_COLOR_TIME_OUT);
@@ -58,7 +58,7 @@ void enableLight()
   {
     strip.setPixelColor(n, 255, 120, 5);
     strip.show();
-    delay(50);
+    delay(30);
   }
   lightOn = true;
 }
@@ -69,7 +69,7 @@ void disableLight()
   {
     strip.setPixelColor(n, 0, 0, 0);
     strip.show();
-    delay(50);
+    delay(30);
   }
   lightOn = false;
 }
