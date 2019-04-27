@@ -58,7 +58,7 @@ void enableLight()
   {
     strip.setPixelColor(n, 255, 120, 5);
     strip.show();
-    delay(30);
+    delay(20);
   }
   lightOn = true;
 }
@@ -69,7 +69,10 @@ void disableLight()
   {
     strip.setPixelColor(n, 0, 0, 0);
     strip.show();
-    delay(30);
+    delay(20);
+    if(digitalRead(PIR_PIN_ENTRANCE) == HIGH){
+      break;
+    }
   }
   lightOn = false;
 }
