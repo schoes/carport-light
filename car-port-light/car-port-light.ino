@@ -79,6 +79,9 @@ void disableLight()
     strip.setPixelColor(n, color_black);
     strip.show();
     delay(20);
+    if(digitalRead(PIR_PIN_ENTRANCE) == HIGH){
+      break;
+    }
   }
   lightOn = false;
 }
