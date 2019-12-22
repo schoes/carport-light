@@ -10,7 +10,7 @@ int SHOW_LED_COLOR_TIME_OUT = 2000;
 int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
-bool lightOn = false;
+boolean lightOn = false;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 uint32_t default_color = strip.Color(255, 120, 5);
 uint32_t christmas_color_gold = strip.Color(255, 215, 0);
@@ -26,12 +26,9 @@ void loop()
 {
   while (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
   {
-    if (!lightOn)
+    if (!lightOn && shouldEnableLight())
     {
-      if (shouldEnableLight())
-      {
-        enableLight();
-      }
+      enableLight();
     }
   }
   if (lightOn)
@@ -79,7 +76,7 @@ void disableLight()
     strip.setPixelColor(n, color_black);
     strip.show();
     delay(20);
-    if(digitalRead(PIR_PIN_ENTRANCE) == HIGH){
+    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
       break;
     }
   }
