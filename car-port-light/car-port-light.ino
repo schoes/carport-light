@@ -7,12 +7,15 @@
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
 int SHOW_LED_COLOR_TIME_OUT = 2000;
-int MIN_BURN_DURATION = 30000;
+int MIN_BURN_DURATION = 40000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
 bool lightOn = false;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
-
+uint32_t default_color = strip.Color(255, 120, 5);
+uint32_t christmas_color_gold = strip.Color(255, 215, 0);
+uint32_t christmas_color_red = strip.Color(255, 0, 0);
+uint32_t color_black = strip.Color(0, 0, 0);
 void setup()
 {
   setupLEDStrip();
@@ -56,7 +59,13 @@ void enableLight()
 {
   for (int n = 0; n < NUM_LEDS; n++)
   {
-    strip.setPixelColor(n, 255, 120, 5);
+    //strip.setPixelColor(n, default_color);
+    if (n % 2 == 0) {
+      strip.setPixelColor(n, christmas_color_gold);
+    }
+    else {
+      strip.setPixelColor(n, christmas_color_red);
+    }
     strip.show();
     delay(20);
   }
@@ -67,12 +76,9 @@ void disableLight()
 {
   for (int n = NUM_LEDS; n >= 0; n--)
   {
-    strip.setPixelColor(n, 0, 0, 0);
+    strip.setPixelColor(n, color_black);
     strip.show();
     delay(20);
-    if(digitalRead(PIR_PIN_ENTRANCE) == HIGH){
-      break;
-    }
   }
   lightOn = false;
 }
