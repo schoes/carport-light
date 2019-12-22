@@ -7,7 +7,7 @@
 //LIGHT INTENSE DETECTION --> Analog INPUT
 #define LIGHT_DETECTION_PIN_ENTRANCE A0
 int SHOW_LED_COLOR_TIME_OUT = 2000;
-int MIN_BURN_DURATION = 40000;
+int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
 bool lightOn = false;
@@ -36,7 +36,7 @@ void loop()
   }
   if (lightOn)
   {
-    delay(getBurnDuration());
+    delay(MIN_BURN_DURATION);
     disableLight();
   }
 }
@@ -84,9 +84,4 @@ void disableLight()
     }
   }
   lightOn = false;
-}
-
-int getBurnDuration()
-{
-  return MIN_BURN_DURATION;
 }
