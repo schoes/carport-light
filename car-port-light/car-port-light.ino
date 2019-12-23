@@ -32,7 +32,7 @@ void loop()
       enableLight();
     }
   }
-  if (lightOn)
+  if (lightOn || !shouldEnableLight())
   {
     delay(MIN_BURN_DURATION);
     disableLight();
@@ -79,7 +79,7 @@ void disableLight()
     strip.setPixelColor(n, color_black);
     strip.show();
     delay(20);
-    if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
+    if (shouldEnableLight()) {
       lightDisaledIndex = n;
       break;
     }
