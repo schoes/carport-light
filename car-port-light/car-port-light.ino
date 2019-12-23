@@ -10,6 +10,7 @@ int SHOW_LED_COLOR_TIME_OUT = 2000;
 int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
+int lightDisaledIndex = 0;
 boolean lightOn = false;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 uint32_t default_color = strip.Color(255, 120, 5);
@@ -24,9 +25,9 @@ void setup()
 
 void loop()
 {
-  while (digitalRead(PIR_PIN_ENTRANCE) == HIGH)
+  while (shouldEnableLight())
   {
-    if (!lightOn && shouldEnableLight())
+    if (!lightOn)
     {
       enableLight();
     }
@@ -40,33 +41,35 @@ void loop()
 void setupLEDStrip()
 {
   strip.begin();
-  //strip.setBrightness(64);
   strip.show();
   enableLight();
   delay(SHOW_LED_COLOR_TIME_OUT);
   disableLight();
 }
-bool shouldEnableLight()
+boolean shouldEnableLight()
 {
-  int intensity = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
-  return intensity <= LIGHT_INTENSE_BREAKPOINT;
+  return (analogRead(LIGHT_DETECTION_PIN_ENTRANCE) <= LIGHT_INTENSE_BREAKPOINT) && (digitalRead(PIR_PIN_ENTRANCE) == HIGH);
 }
 
 void enableLight()
 {
-  for (int n = 0; n < NUM_LEDS; n++)
+  for (int n = lightDisaledIndex; n < NUM_LEDS; n++)
   {
-    //strip.setPixelColor(n, default_color);
-    if (n % 2 == 0) {
-      strip.setPixelColor(n, christmas_color_gold);
-    }
-    else {
-      strip.setPixelColor(n, christmas_color_red);
-    }
-    strip.show();
-    delay(20);
+    setStripColor(n);
   }
   lightOn = true;
+}
+
+void setStripColor(int index) {
+  //strip.setPixelColor(n, default_color);
+  if (index % 2 == 0) {
+    strip.setPixelColor(index, christmas_color_gold);
+  }
+  else {
+    strip.setPixelColor(index, christmas_color_red);
+  }
+  strip.show();
+  delay(20);
 }
 
 void disableLight()
@@ -77,8 +80,10 @@ void disableLight()
     strip.show();
     delay(20);
     if (digitalRead(PIR_PIN_ENTRANCE) == HIGH) {
+      lightDisaledIndex = n;
       break;
     }
   }
+  lightDisaledIndex = 0;
   lightOn = false;
 }
