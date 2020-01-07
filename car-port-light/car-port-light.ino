@@ -28,19 +28,15 @@ void setup()
 
 void loop()
 {
-  while (shouldEnableLight())
+  if (shouldEnableLight())
   {
-    if (!lightIsTurnedOn)
-    {
-      lightIsTurnedOn = turnOnLight();
-    }
+    lightIsTurnedOn = turnOnLight();
   }
-  if (lightIsTurnedOn || !shouldEnableLight())
+  else
   {
     delay(MIN_BURN_DURATION);
     lightIsTurnedOn = turnOffLight();
   }
-   lightIsTurnedOn = turnOffLight();
 }
 void setupLEDStrip()
 {
@@ -52,12 +48,12 @@ void setupLEDStrip()
 }
 boolean shouldEnableLight()
 {
-  return analogRead(LIGHT_DETECTION_PIN_ENTRANCE) <= LIGHT_INTENSE_BREAKPOINT && digitalRead(PIR_PIN_ENTRANCE) == HIGH;
+  return (analogRead(LIGHT_DETECTION_PIN_ENTRANCE) <= LIGHT_INTENSE_BREAKPOINT && digitalRead(PIR_PIN_ENTRANCE) == HIGH) && !lightIsTurnedOn;
 }
 //******TURN ON******
 boolean turnOnLight()
 {
-  Serial.println(lightTurnedOfIndex); 
+  Serial.println(lightTurnedOfIndex);
   for (int n = 0; n < NUM_LEDS; n++)
   {
     turnOnPixel(n, DEFAULT_SHOW_DELAY);
@@ -84,7 +80,7 @@ boolean turnOffLight()
   {
     turnOffPixel(n, DEFAULT_SHOW_DELAY);
     if (shouldEnableLight()) {
-    lightTurnedOfIndex = n;
+      lightTurnedOfIndex = n;
       break;
     }
   }
@@ -93,7 +89,7 @@ boolean turnOffLight()
 
 void turnOffPixel(int index, int showDelay) {
   strip.setPixelColor(index, color_black);
-    strip.show();
-    delay(showDelay);
+  strip.show();
+  delay(showDelay);
 
 }
