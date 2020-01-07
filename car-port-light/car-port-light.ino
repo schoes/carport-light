@@ -40,6 +40,7 @@ void loop()
     delay(MIN_BURN_DURATION);
     lightIsTurnedOn = turnOffLight();
   }
+   lightIsTurnedOn = turnOffLight();
 }
 void setupLEDStrip()
 {
