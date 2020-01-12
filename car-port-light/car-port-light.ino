@@ -24,6 +24,7 @@ void setup()
 {
   setupLEDStrip();
   pinMode(LIGHT_DETECTION_PIN_ENTRANCE, INPUT);
+  pinMode(PIR_PIN_ENTRANCE, INPUT);
 }
 
 void loop()
@@ -32,9 +33,12 @@ void loop()
   {
     lightIsTurnedOn = turnOnLight();
   }
-  else
+  if (lightIsTurnedOn)
   {
     delay(MIN_BURN_DURATION);
+    lightIsTurnedOn = turnOffLight();
+  }
+  else {
     lightIsTurnedOn = turnOffLight();
   }
 }
@@ -48,7 +52,11 @@ void setupLEDStrip()
 }
 boolean shouldEnableLight()
 {
-  return (analogRead(LIGHT_DETECTION_PIN_ENTRANCE) <= LIGHT_INTENSE_BREAKPOINT && digitalRead(PIR_PIN_ENTRANCE) == HIGH) && !lightIsTurnedOn;
+  int brightness = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
+  int motion = digitalRead(PIR_PIN_ENTRANCE);
+  return  brightness <= LIGHT_INTENSE_BREAKPOINT
+         && motion == HIGH
+         && !lightIsTurnedOn;
 }
 //******TURN ON******
 boolean turnOnLight()
