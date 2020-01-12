@@ -17,8 +17,8 @@ boolean lightIsTurnedOn = false;
 // the LED Strip definition
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 uint32_t default_color = strip.Color(255, 120, 5);
-uint32_t christmas_color_gold = strip.Color(255, 215, 0);
-uint32_t christmas_color_red = strip.Color(255, 0, 0);
+uint32_t color_yellow = strip.Color(255, 215, 0);
+uint32_t color_green = strip.Color(0, 255, 0);
 uint32_t color_black = strip.Color(0, 0, 0);
 void setup()
 {
@@ -72,10 +72,10 @@ boolean turnOnLight()
 void turnOnPixel(int index, int showDelay) {
   //strip.setPixelColor(n, default_color);
   if (index % 2 == 0) {
-    strip.setPixelColor(index, christmas_color_gold);
+    strip.setPixelColor(index, color_yellow);
   }
   else {
-    strip.setPixelColor(index, christmas_color_red);
+    strip.setPixelColor(index, color_green);
   }
   strip.show();
   delay(showDelay);
