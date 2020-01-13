@@ -19,7 +19,7 @@ boolean lightIsTurnedOn = false;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 uint32_t default_color = strip.Color(255, 120, 5);
 uint32_t color_one = strip.Color(255, 215, 0);
-uint32_t color_two = strip.Color(245,64, 41);
+uint32_t color_two = strip.Color(245, 64, 41);
 uint32_t color_black = strip.Color(0, 0, 0);
 void setup()
 {
@@ -30,17 +30,13 @@ void setup()
 
 void loop()
 {
-
-  while (darkEnough()) {
-    if (motionDetected() && !lightIsTurnedOn) {
-      lightIsTurnedOn = turnOnLight();
-    }
-    else {
-      delay(MIN_BURN_DURATION);
-      lightIsTurnedOn = turnOffLight();
-    }
+  if (shouldEnableLight()) {
+    lightIsTurnedOn = turnOnLight();
   }
-  lightIsTurnedOn = turnOffLight();
+  else {
+    delay(MIN_BURN_DURATION);
+    lightIsTurnedOn = turnOffLight();
+  }
 }
 void setupLEDStrip()
 {
