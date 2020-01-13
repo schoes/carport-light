@@ -12,7 +12,7 @@ int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
 int MAX_BRIGHTNESS = 200;
 int lightTurnedOfIndex = 0;
-int DEFAULT_SHOW_DELAY = 20;
+int DEFAULT_SHOW_DELAY = 15;
 int DEFAULT_HIDE_DELAY = 10;
 boolean lightIsTurnedOn = false;
 // the LED Strip definition
@@ -67,7 +67,6 @@ boolean darkEnough() {
 //******TURN ON******
 boolean turnOnLight()
 {
-  Serial.println(lightTurnedOfIndex);
   for (int n = 0; n < NUM_LEDS; n++)
   {
     turnOnPixel(n, DEFAULT_SHOW_DELAY);
@@ -76,7 +75,6 @@ boolean turnOnLight()
 }
 
 void turnOnPixel(int index, int showDelay) {
-  //strip.setPixelColor(n, default_color);
   if (index % 2 == 0) {
     strip.setPixelColor(index, color_one);
   }
