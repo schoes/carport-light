@@ -10,16 +10,16 @@
 int SHOW_LED_COLOR_TIME_OUT = 2000;
 int MIN_BURN_DURATION = 30000;
 int LIGHT_INTENSE_BREAKPOINT = 20;
-int MAX_BRIGHTNESS = 200;
+int MAX_BRIGHTNESS = 220;
 int lightTurnedOfIndex = 0;
-int DEFAULT_SHOW_DELAY = 15;
-int DEFAULT_HIDE_DELAY = 10;
+int DEFAULT_SHOW_DELAY = 10;
+int DEFAULT_HIDE_DELAY = 20;
 boolean lightIsTurnedOn = false;
 // the LED Strip definition
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, NEOPIXEL_PIN, NEO_BRG);
 uint32_t default_color = strip.Color(255, 120, 5);
 uint32_t color_one = strip.Color(255, 215, 0);
-uint32_t color_two = strip.Color(245, 64, 41);
+uint32_t color_two = strip.Color(0, 255, 0);
 uint32_t color_black = strip.Color(0, 0, 0);
 void setup()
 {
@@ -30,11 +30,20 @@ void setup()
 
 void loop()
 {
-  if (shouldEnableLight()) {
-    lightIsTurnedOn = turnOnLight();
+  while (isDarkEnough()) {
+    if (shouldEnableLight(lightIsTurnedOn)) {
+      lightIsTurnedOn = turnOnLight();
+    }
+    else if(lightIsTurnedOn) {
+      delay(MIN_BURN_DURATION);
+      lightIsTurnedOn = turnOffLight();
+    }
+    else{
+      return;
+    }
   }
-  else {
-    delay(MIN_BURN_DURATION);
+
+  if (lightIsTurnedOn) {
     lightIsTurnedOn = turnOffLight();
   }
 }
@@ -46,9 +55,9 @@ void setupLEDStrip()
   delay(SHOW_LED_COLOR_TIME_OUT);
   turnOffLight();
 }
-boolean shouldEnableLight()
+boolean shouldEnableLight(boolean alreadyOn)
 {
-  return  darkEnough() && motionDetected() && !lightIsTurnedOn;
+  return  motionDetected() && !alreadyOn;
 }
 
 boolean motionDetected() {
@@ -56,7 +65,7 @@ boolean motionDetected() {
   return motion == HIGH;
 }
 
-boolean darkEnough() {
+boolean isDarkEnough() {
   int brightness = analogRead(LIGHT_DETECTION_PIN_ENTRANCE);
   return  brightness <= LIGHT_INTENSE_BREAKPOINT;
 }
